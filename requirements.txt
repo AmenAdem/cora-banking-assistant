@@ -9,3 +9,8 @@ fastapi==0.109.2
 uvicorn[standard]
 pydantic-settings
 requests
+python-dotenv
+structlog
+slowapi
+prometheus-client
+starlette-prometheus

@@ -5,7 +5,7 @@ from prompts.templates import TICKET_RESOLUTION_TEMPLATE
 class LLMHandler:
     def __init__(self):
         self.base_url = settings.OLLAMA_BASE_URL
-        self.model = settings.OLLAMA_MODEL
+        self.model = settings.OLLAMA_LANGUAGE_MODEL
 
     def generate_response(self, search_results, query_title, query_description):
         context = self._format_context(search_results)

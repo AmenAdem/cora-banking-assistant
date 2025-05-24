@@ -10,63 +10,59 @@ services:
       - qdrant_storage:/qdrant/storage
     environment:
       QDRANT__LOG_LEVEL: INFO
-    env_file:
-      - ./data/qdrant/.env
 
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    env_file:
-      - ./data/prometheus/.env
-    networks:
-      - monitoring
-    restart: always
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #   networks:
+  #     - monitoring
+  #   restart: always
 
-  # Grafana
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana-storage:/var/lib/grafana
-      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./grafana/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
-    environment:
-    env_file:
-      - ./data/grafana/.env
-    networks:
-      - monitoring
-    restart: always
+  # # Grafana
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - grafana-storage:/var/lib/grafana
+  #     - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+  #     - ./grafana/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #     - GF_USERS_ALLOW_SIGN_UP=false
+  #   networks:
+  #     - monitoring
+  #   restart: always
 
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    ports:
-      - "8080:8080"
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-    networks:
-      - monitoring
-    restart: always
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:latest
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:rw
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #   networks:
+  #     - monitoring
+  #   restart: always
 
-  postgres:
-    image: postgres:14
-    ports:
-      - "5432:5432"
-    env_file:
-      - ./data/postgres/.env
-    networks:
-      - monitoring
-    restart: always
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+  # postgres:
+  #   image: postgres:14
+  #   ports:
+  #     - "5432:5432"
+  #   env_file:
+  #     - ./data/postgres/.env
+  #   networks:
+  #     - monitoring
+  #   restart: always
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
 
 networks:
   monitoring:
