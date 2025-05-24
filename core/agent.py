@@ -8,9 +8,12 @@ from core.embedding_handler import EmbeddingHandler
 
 class TicketAgent:
     def __init__(self):
+
+        
         self.vector_store = VectorStore()
         self.llm_handler = LLMHandler()
         self.embeding_handler = EmbeddingHandler()
+
 
     def process_query(self, title, description, category):
         query_text = clean_text(f"{title} {description} {category}")

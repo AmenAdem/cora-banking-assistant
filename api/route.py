@@ -1,5 +1,6 @@
 
 
+import json
 from api.schemas import TicketQuery
 from fastapi import (
     APIRouter,
@@ -42,7 +43,12 @@ async def query_ticket(query: TicketQuery,request: Request):
 @limiter.limit(settings.RATE_LIMIT_ENDPOINTS["default"][0])
 async def update_tickets(tickets: list[TicketQuery],request: Request):
     try:
-        print(request)
+
+        # TICKETS_JSON_PATH = "data/customer_support_tickets.json"
+        # with open(TICKETS_JSON_PATH, "r", encoding="utf-8") as f:
+        #     tickets_data = json.load(f)
+        # tickets = [TicketQuery(**ticket) for ticket in tickets_data]
+        # print(tickets)
         agent.update_tickets(tickets)
         return {"message": "Tickets updated successfully"}
     except Exception as e:
