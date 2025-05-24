@@ -1,0 +1,11 @@
+qdrant-client
+sentence-transformers
+nltk
+jsonschema  
+pypdf
+langchain-community
+langchain
+fastapi==0.109.2
+uvicorn[standard]
+pydantic-settings
+requests
