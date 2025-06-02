@@ -7,7 +7,7 @@ services:
       - "6333:6333"  # API port
       - "6334:6334"  # gRPC port
     volumes:
-      - qdrant_storage:/qdrant/storage
+      - qdrant_storage_v1:/qdrant/storage
     environment:
       QDRANT__LOG_LEVEL: INFO
 
@@ -69,6 +69,6 @@ networks:
     driver: bridge
 
 volumes:
-  qdrant_storage:
+  qdrant_storage_v1:
   grafana-storage: 
   postgres-data:

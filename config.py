@@ -138,7 +138,7 @@ class Settings:
 
 
         # LLM configuration
-        self.OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "")
+        self.OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
         self.OLLAMA_LANGUAGE_MODEL = os.getenv("OLLAMA_LANGUAGE_MODEL", "qwen2")
         self.OLLAMA_EMBEDDING_MODEL = os.getenv("OLLAMA_EMBEDDING_MODEL", "nomic-embed-text")
         self.DEFAULT_LLM_TEMPERATURE = float(os.getenv("DEFAULT_LLM_TEMPERATURE", "0.2"))
@@ -153,9 +153,9 @@ class Settings:
         self.LOG_FORMAT = os.getenv("LOG_FORMAT", "json")  # "json" or "console"
 
         # Qdrant Configuration
-        self.QDRANT_HOST = os.getenv("QDRANT_HOST", "")
-        self.QDRANT_PORT = int(os.getenv("QDRANT_PORT", "20"))
-        self.QDRANT_COLLECTION_NAME = os.getenv("QDRANT_NAME", "helpdesk_tickets1")
+        self.QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
+        self.QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
+        self.QDRANT_COLLECTION_NAME = os.getenv("QDRANT_NAME", "helpdesk_tickets")
         self.QDRANT_VECTOR_SIZE = int(os.getenv("QDRANT_VECTOR_SIZE", "768"))
 
         # Rate Limiting Configuration
