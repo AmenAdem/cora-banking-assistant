@@ -158,6 +158,11 @@ class Settings:
         self.QDRANT_COLLECTION_NAME = os.getenv("QDRANT_NAME", "helpdesk_tickets")
         self.QDRANT_VECTOR_SIZE = int(os.getenv("QDRANT_VECTOR_SIZE", "768"))
 
+        # Cohere Configuration
+        self.COHERE_API_KEY = os.getenv("COHERE_API_KEY")
+        self.CO_API_URL = os.getenv("CO_API_URL", "https://api.cohere.ai/v1")
+        self.COHERE_API_URL = os.getenv("COHERE_API_URL", "https://api.cohere.ai/v1")
+
         # Rate Limiting Configuration
         self.RATE_LIMIT_DEFAULT = parse_list_from_env("RATE_LIMIT_DEFAULT", ["200 per day", "50 per hour"])
 

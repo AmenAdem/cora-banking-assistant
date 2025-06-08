@@ -23,7 +23,7 @@ agent = TicketAgent()
 @limiter.limit(settings.RATE_LIMIT_ENDPOINTS["default"][0])
 async def query_ticket(query: TicketQuery,request: Request):
     try:
-        results, response = agent.process_query(
+        response = agent.process_query(
             query.title,
             query.description,
             query.category
@@ -33,7 +33,7 @@ async def query_ticket(query: TicketQuery,request: Request):
         #     similar_tickets=results,
         #     generated_response=response
         # )
-        return results, response
+        return  response
 
     except Exception as e:
         logger.error(f"Error processing query: {str(e)}", exc_info=True)
