@@ -5,6 +5,7 @@ from langchain.chains import LLMChain
 from core.vector_store import VectorStore
 from core.langchain_llm_handler import OllamaLLMHandler
 from core.embedding_handler import EmbeddingHandler
+from prompts.templates import CLAIM_RESPONSE_GENERATION_SYSTEM_PROMPT, DISPUTE_RESPONSE_GENERATION_SYSTEM_PROMPT, DOCUMENT_RANKER_SYSTEM_PROMPT, QUERY_VALIDATOR_SYSTEM_PROMPT, RESPONSE_EVALUATION_SYSTEM_PROMPT, RESPONSE_EVALUATION_USER_PROMPT, SUPPORT_RESPONSE_GENERATION_SYSTEM_PROMPT
 from utils.text_processor import clean_text
 from config import settings
 import logging
@@ -52,20 +53,7 @@ class BankingAgentFlow:
                 state["start_time"] = datetime.now().isoformat()
             
             prompt = ChatPromptTemplate.from_messages([
-                ("system", """You are a banking query validator. Your job is to:
-                1. Determine if the query is valid and banking-related
-                2. Classify the query type as 'support', 'claim', or 'dispute'
-                3. Check if the query needs clarification
-                4. Reformulate the query if needed for better search
-                
-                Respond in JSON format with these exact fields:
-                {{
-                    "is_valid": true,
-                    "query_type": "support",
-                    "needs_clarification": false,
-                    "reformulated_query": "improved query for search",
-                    "reasoning": "explanation of your decision"
-                }}"""),
+                ("system", QUERY_VALIDATOR_SYSTEM_PROMPT),
                 ("user", "Query: {input}")
             ])
             
@@ -160,14 +148,7 @@ class BankingAgentFlow:
             context = "\n".join(doc_summaries)
             
             prompt = ChatPromptTemplate.from_messages([
-                ("system", """You are a document relevance ranker. Given a query and document summaries, 
-                rank the documents by relevance and filter out irrelevant ones.
-                
-                Respond in JSON format:
-                {{
-                    "relevant_docs": [1, 3, 5],  // indices of relevant docs (1-based)
-                    "reasoning": "explanation of ranking decisions"
-                }}"""),
+                ("system", DOCUMENT_RANKER_SYSTEM_PROMPT),
                 ("user", "Query: {query}\n\nDocuments:\n{context}")
             ])
             
@@ -228,17 +209,14 @@ class BankingAgentFlow:
             
             # Create prompt based on query type
             if query_type == "support":
-                system_msg = """You are a helpful banking assistant. Use the provided context (context can contains resolutions how the old simular cases have been solved) to answer the customer's question clearly and professionally. 
-                If the context doesn't contain enough information, acknowledge this and suggest contacting customer service."""
+                system_msg = SUPPORT_RESPONSE_GENERATION_SYSTEM_PROMPT
             elif query_type == "claim":
-                system_msg = """You are a banking claims specialist. Use the provided context (context can contains resolutions how the old simular cases have been solved)  to help with the customer's claim. 
-                Be thorough and mention any required documentation or next steps."""
+                system_msg = CLAIM_RESPONSE_GENERATION_SYSTEM_PROMPT
             else:  # dispute
-                system_msg = """You are a banking dispute resolution assistant. Use the provided context (context can contains resolutions how the old simular cases have been solved) to help address the customer's dispute. 
-                Explain the process clearly and mention timeframes where applicable."""
+                system_msg = DISPUTE_RESPONSE_GENERATION_SYSTEM_PROMPT
             
             prompt = ChatPromptTemplate.from_messages([
-                ("system", f"{system_msg}\n\nContext:\n{context}"),
+                ("system", system_msg.format(context=context)),
                 ("user", "{query}")
             ])
             
@@ -278,24 +256,16 @@ class BankingAgentFlow:
                 return state
             
             prompt = ChatPromptTemplate.from_messages([
-                ("system", """You are a banking supervisor evaluating AI responses. Assess the response quality based on:
-                1. Accuracy and relevance to the query
-                2. Completeness of information
-                3. Professional tone and clarity
-                4. Appropriate handling of the query type ({query_type})
-                
-                Respond in JSON format:
-                {{
-                    "confidence_score": 0.85,  // float between 0.0 and 1.0
-                    "escalation_required": false,  // true if confidence < 0.75 or sensitive issue
-                    "feedback": "detailed evaluation explanation",
-                    "improvements": "suggested improvements if any"
-                }}"""),
-                ("user", "Query Type: {query_type}\nCustomer Query: {query}\nAI Response: {response}")
+                ("system", RESPONSE_EVALUATION_SYSTEM_PROMPT),
+                ("user", RESPONSE_EVALUATION_USER_PROMPT)
             ])
             
             chain = LLMChain(llm=self.llm_handler, prompt=prompt)
-            evaluation = chain.run(query_type=query_type, query=query, response=response)
+            evaluation = chain.run(
+                query_type=query_type,
+                query=query,
+                response=response
+            )
             
             try:
                 eval_data = json.loads(evaluation.strip())
