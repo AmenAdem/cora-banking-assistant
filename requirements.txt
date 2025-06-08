@@ -14,3 +14,5 @@ structlog
 slowapi
 prometheus-client
 starlette-prometheus
+langgraph
+openai
