@@ -140,6 +140,8 @@ class Settings:
         # LLM configuration
         self.OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
         self.OLLAMA_LANGUAGE_MODEL = os.getenv("OLLAMA_LANGUAGE_MODEL", "qwen2")
+        self.GEMINI_API_KEY = os.getenv("GEMINI_API_KEY","")
+        self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY","")
         self.OLLAMA_EMBEDDING_MODEL = os.getenv("OLLAMA_EMBEDDING_MODEL", "nomic-embed-text")
         self.DEFAULT_LLM_TEMPERATURE = float(os.getenv("DEFAULT_LLM_TEMPERATURE", "0.2"))
         self.MAX_TOKENS = int(os.getenv("MAX_TOKENS", "2000"))
@@ -157,6 +159,8 @@ class Settings:
         self.QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
         self.QDRANT_COLLECTION_NAME = os.getenv("QDRANT_NAME", "helpdesk_tickets")
         self.QDRANT_VECTOR_SIZE = int(os.getenv("QDRANT_VECTOR_SIZE", "768"))
+
+        
 
         # Cohere Configuration
         self.COHERE_API_KEY = os.getenv("COHERE_API_KEY")
