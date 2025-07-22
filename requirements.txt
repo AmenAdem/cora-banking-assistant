@@ -16,3 +16,6 @@ prometheus-client
 starlette-prometheus
 langgraph
 openai
+langchain-ollama
+langchain-google-genai
+langchain-openai

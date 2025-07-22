@@ -3,7 +3,7 @@ from langgraph.graph import StateGraph, END
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
 from core.vector_store import VectorStore
-from core.langchain_llm_handler import OllamaLLMHandler
+from core.langchain_llm_handler import GenericLLMHandler
 from core.embedding_handler import EmbeddingHandler
 from prompts.templates import CLAIM_RESPONSE_GENERATION_SYSTEM_PROMPT, DISPUTE_RESPONSE_GENERATION_SYSTEM_PROMPT, DOCUMENT_RANKER_SYSTEM_PROMPT, QUERY_VALIDATOR_SYSTEM_PROMPT, RESPONSE_EVALUATION_SYSTEM_PROMPT, RESPONSE_EVALUATION_USER_PROMPT, SUPPORT_RESPONSE_GENERATION_SYSTEM_PROMPT
 from utils.text_processor import clean_text
@@ -38,7 +38,25 @@ class AgentState(TypedDict):
 class BankingAgentFlow:
     def __init__(self):
         self.vector_store = VectorStore()
-        self.llm_handler = OllamaLLMHandler()
+        self.llm_handler = GenericLLMHandler(
+             provider="gemini",
+             model_name="gemini-2.5-flash"
+         )
+        #ollama_llm = GenericLLMHandler(
+        #     provider="ollama",
+        #     model_name="llama2"
+        # )
+
+
+        # gemini_llm = GenericLLMHandler(
+        #     provider="gemini",
+        #     model_name="gemini-pro"
+        # )
+
+        # openai_llm = GenericLLMHandler(
+        #     provider="openai",
+        #     model_name="gpt-3.5-turbo"
+        # )
         self.embedding_handler = EmbeddingHandler()
         logger.info("BankingAgentFlow initialized with all required components")
 
@@ -62,7 +80,7 @@ class BankingAgentFlow:
             
             # Parse the JSON response
             try:
-                validation_data = json.loads(result.strip())
+                validation_data = self.llm_handler.parse_json_response(result)
             except json.JSONDecodeError:
                 # Fallback parsing if JSON is malformed
                 validation_data = {
@@ -156,7 +174,7 @@ class BankingAgentFlow:
             result = chain.run(query=state["query"], context=context)
             
             try:
-                ranking_data = json.loads(result.strip())
+                ranking_data = self.llm_handler.parse_json_response(result)
                 relevant_indices = ranking_data.get("relevant_docs", list(range(1, min(4, len(documents) + 1))))
             except json.JSONDecodeError:
                 # Fallback: take top 3 documents
@@ -268,7 +286,7 @@ class BankingAgentFlow:
             )
             
             try:
-                eval_data = json.loads(evaluation.strip())
+                eval_data = self.llm_handler.parse_json_response(evaluation)
                 confidence_score = float(eval_data.get("confidence_score", 0.5))
                 escalation_required = eval_data.get("escalation_required", confidence_score < 0.75)
             except (json.JSONDecodeError, ValueError):
