@@ -178,5 +178,3 @@ cython_debug/
 logs/
 *.log
 *.jsonl
-temp_auto_push.bat
-temp_interactive_push.bat
